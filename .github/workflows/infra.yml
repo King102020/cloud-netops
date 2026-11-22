@@ -39,13 +39,29 @@ jobs:
         working-directory: infra/envs/local
         run: terraform plan -input=false -no-color -lock=false
 
+  token:
+    # Service containers start before any step runs, so the LocalStack job is
+    # gated at job level on whether the secret exists.
+    runs-on: ubuntu-24.04
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - id: check
+        env:
+          TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::LOCALSTACK_AUTH_TOKEN is not set; the LocalStack apply job is skipped."
+          fi
+
   localstack:
     name: apply on LocalStack
-    needs: static
+    needs: [static, token]
+    if: needs.token.outputs.present == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    env:
-      HAS_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN != '' }}
     services:
       localstack:
         image: localstack/localstack:latest
@@ -54,23 +70,16 @@ jobs:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
           SERVICES: ec2,iam,sts,logs,route53,dynamodb
     steps:
-      - name: Skip without a LocalStack token
-        if: env.HAS_TOKEN != 'true'
-        run: echo "::notice::LOCALSTACK_AUTH_TOKEN is not set; skipping apply on LocalStack."
       - uses: actions/checkout@v4
-        if: env.HAS_TOKEN == 'true'
       - uses: hashicorp/setup-terraform@v3
-        if: env.HAS_TOKEN == 'true'
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
       - name: Wait for LocalStack
-        if: env.HAS_TOKEN == 'true'
         run: |
           for _ in $(seq 1 60); do curl -sf localhost:4566/_localstack/health && exit 0; sleep 2; done
           exit 1
       - name: Apply, re-plan (must be empty), destroy
-        if: env.HAS_TOKEN == 'true'
         working-directory: infra/envs/local
         run: |
           terraform init -input=false -no-color
