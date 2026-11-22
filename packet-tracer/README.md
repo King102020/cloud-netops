@@ -6,7 +6,7 @@ The `.pkt` is built by hand from [`docs/network-design.md`](../docs/network-desi
 which is the source of truth. If the two disagree, the doc wins and the
 `.pkt` is fixed.
 
-File: `cloud-netops.pkt` (commit it here when built).
+File: [`cloud-netops.pkt`](cloud-netops.pkt). Open it in Packet Tracer 8.2 or later.
 
 ## Fast path: paste the configs
 
@@ -77,6 +77,15 @@ Each step lists the doc section it comes from.
 
 ## Notes
 
+- Built and tested in Packet Tracer 8.2.2: `cloud-netops.pkt` passes all
+  11 acceptance tests in design doc §10.
+- Packet Tracer rejects the `log` keyword on ACL entries, so these configs
+  end each ACL with a plain `deny`. The design (§6) keeps `log`, which
+  real IOS supports.
+- The 3650 only does dot1q, so it rejects `switchport trunk encapsulation
+  dot1q`. That one error is expected.
+- The console asks for `admin` and the lab password after a reload
+  (`login local`). The password is not in the repo.
 - Packet Tracer's SMB support is limited. Line 50 of `TO-SERVERS` (port 445)
   is configured but checked for real in Containerlab (phase 2).
 - Save often. Packet Tracer can crash on large simulations.

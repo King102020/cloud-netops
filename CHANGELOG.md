@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ADR 0002 (IP addressing scheme) and ADR 0003 (OSPF multi-area,
   hub-and-spoke with backup link), both proposed.
 - Paste-ready IOS configs for every Packet Tracer device.
+- Packet Tracer build `packet-tracer/cloud-netops.pkt` (Packet Tracer 8.2.2),
+  passing all 11 phase 1 acceptance tests.
 - Containerlab lab (phase 2): 5 FRR routers and 9 hosts reproducing the
   design, with OSPF, iptables ACLs and NAT. `lab/clab.sh` works with native
   Docker or Docker Desktop. 58 pytest acceptance checks, including

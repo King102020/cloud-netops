@@ -40,7 +40,6 @@ All hosts are on **DHCP** (Desktop → IP Configuration → DHCP).
 | br2-pc-01 | br2-access-01 Fa0/1 | 10 | `10.30.10.100`+ |
 | br2-guest-01 | br2-access-01 Fa0/16 | 30 | `10.30.30.100`+ |
 
-**MGMT test host** for acceptance test 11: `hq-admin-01` on hq-access-01 Fa0/21.
-On the switch, run `interface Fa0/21`, `switchport access vlan 99` and
-`no shutdown`.
-Give the host a static address: `10.10.99.10 /27`, gateway `10.10.99.1`.
+**MGMT test host** for acceptance test 11: `hq-admin-01` on hq-access-01 Fa0/21
+(that port is already in VLAN 99 in `hq-access-01.ios`). Give the host a
+static address: `10.10.99.10 /27`, gateway `10.10.99.1`, DNS `10.10.20.10`.
