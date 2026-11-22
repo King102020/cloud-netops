@@ -1,0 +1,88 @@
+{
+  "_source": "docs/network-design.md and lab/cnops.clab.yml",
+  "sites": [
+    {"id": "hq", "name": "Head office", "cidr": "10.10.0.0/16", "cloud_cidr": "10.110.0.0/16", "ospf_area": 0},
+    {"id": "br1", "name": "Branch 1", "cidr": "10.20.0.0/16", "cloud_cidr": "10.120.0.0/16", "ospf_area": 1},
+    {"id": "br2", "name": "Branch 2", "cidr": "10.30.0.0/16", "cloud_cidr": "10.130.0.0/16", "ospf_area": 2},
+    {"id": "isp", "name": "ISP (simulated)", "cidr": "203.0.113.0/24", "cloud_cidr": null, "ospf_area": null}
+  ],
+  "devices": [
+    {"id": "hq-edge-01", "site": "hq", "role": "router", "model": "ISR4331 / FRR 10.2.1", "mgmt_ip": "172.20.20.11", "router_id": "10.255.255.1",
+     "interfaces": [
+       {"name": "eth1", "address": "203.0.113.2/30", "description": "OUTSIDE to isp-edge-01"},
+       {"name": "eth2", "address": "10.255.0.1/30", "description": "INSIDE to hq-core-01"}]},
+    {"id": "hq-core-01", "site": "hq", "role": "router", "model": "3650-24PS / FRR 10.2.1", "mgmt_ip": "172.20.20.12", "router_id": "10.255.255.2",
+     "interfaces": [
+       {"name": "eth1", "address": "10.255.0.2/30", "description": "TRANSIT to hq-edge-01"},
+       {"name": "eth2", "address": "10.255.0.5/30", "description": "WAN to br1-edge-01"},
+       {"name": "eth3", "address": "10.255.0.9/30", "description": "WAN to br2-edge-01"},
+       {"name": "eth4", "address": "10.10.10.1/24", "description": "GW VLAN 10 USERS"},
+       {"name": "br20", "address": "10.10.20.1/24", "description": "GW VLAN 20 SERVERS"},
+       {"name": "eth6", "address": "10.10.30.1/24", "description": "GW VLAN 30 GUEST"},
+       {"name": "eth7", "address": "10.10.99.1/27", "description": "GW VLAN 99 MGMT"}]},
+    {"id": "br1-edge-01", "site": "br1", "role": "router", "model": "ISR4331 / FRR 10.2.1", "mgmt_ip": "172.20.20.13", "router_id": "10.255.255.3",
+     "interfaces": [
+       {"name": "eth1", "address": "10.255.0.6/30", "description": "WAN to hq-core-01"},
+       {"name": "eth2", "address": "10.255.0.13/30", "description": "BACKUP to br2-edge-01"},
+       {"name": "eth3", "address": "10.20.10.1/24", "description": "GW VLAN 10 USERS"},
+       {"name": "eth4", "address": "10.20.30.1/24", "description": "GW VLAN 30 GUEST"}]},
+    {"id": "br2-edge-01", "site": "br2", "role": "router", "model": "ISR4331 / FRR 10.2.1", "mgmt_ip": "172.20.20.14", "router_id": "10.255.255.4",
+     "interfaces": [
+       {"name": "eth1", "address": "10.255.0.10/30", "description": "WAN to hq-core-01"},
+       {"name": "eth2", "address": "10.255.0.14/30", "description": "BACKUP to br1-edge-01"},
+       {"name": "eth3", "address": "10.30.10.1/24", "description": "GW VLAN 10 USERS"},
+       {"name": "eth4", "address": "10.30.30.1/24", "description": "GW VLAN 30 GUEST"}]},
+    {"id": "isp-edge-01", "site": "isp", "role": "isp", "model": "2911 / FRR 10.2.1", "mgmt_ip": "172.20.20.15", "router_id": null,
+     "interfaces": [
+       {"name": "eth1", "address": "203.0.113.1/30", "description": "Customer hq-edge-01"},
+       {"name": "eth2", "address": "198.51.100.1/24", "description": "Simulated internet"}]},
+    {"id": "hq-srv-01", "site": "hq", "role": "server", "model": "Server-PT / multitool", "mgmt_ip": "172.20.20.102", "router_id": null,
+     "interfaces": [{"name": "eth1", "address": "10.10.20.10/24", "description": "VLAN 20 intranet web"}]},
+    {"id": "hq-srv-02", "site": "hq", "role": "server", "model": "Server-PT / multitool", "mgmt_ip": "172.20.20.103", "router_id": null,
+     "interfaces": [{"name": "eth1", "address": "10.10.20.11/24", "description": "VLAN 20 file server"}]},
+    {"id": "isp-srv-01", "site": "isp", "role": "server", "model": "Server-PT / multitool", "mgmt_ip": "172.20.20.131", "router_id": null,
+     "interfaces": [{"name": "eth1", "address": "198.51.100.10/24", "description": "The internet"}]},
+    {"id": "hq-pc-01", "site": "hq", "role": "host", "model": "PC-PT / multitool", "mgmt_ip": "172.20.20.101", "router_id": null,
+     "interfaces": [{"name": "eth1", "address": "10.10.10.100/24", "description": "VLAN 10"}]},
+    {"id": "br1-pc-01", "site": "br1", "role": "host", "model": "PC-PT / multitool", "mgmt_ip": "172.20.20.111", "router_id": null,
+     "interfaces": [{"name": "eth1", "address": "10.20.10.100/24", "description": "VLAN 10"}]},
+    {"id": "br2-pc-01", "site": "br2", "role": "host", "model": "PC-PT / multitool", "mgmt_ip": "172.20.20.121", "router_id": null,
+     "interfaces": [{"name": "eth1", "address": "10.30.10.100/24", "description": "VLAN 10"}]}
+  ],
+  "links": [
+    {"id": "isp-hq", "kind": "isp", "a": {"device": "isp-edge-01", "interface": "eth1", "address": "203.0.113.1"}, "b": {"device": "hq-edge-01", "interface": "eth1", "address": "203.0.113.2"}, "subnet": "203.0.113.0/30", "ospf_cost": null, "controllable": false},
+    {"id": "hq-edge-core", "kind": "transit", "a": {"device": "hq-edge-01", "interface": "eth2", "address": "10.255.0.1"}, "b": {"device": "hq-core-01", "interface": "eth1", "address": "10.255.0.2"}, "subnet": "10.255.0.0/30", "ospf_cost": 1, "controllable": true},
+    {"id": "hq-br1", "kind": "wan", "a": {"device": "hq-core-01", "interface": "eth2", "address": "10.255.0.5"}, "b": {"device": "br1-edge-01", "interface": "eth1", "address": "10.255.0.6"}, "subnet": "10.255.0.4/30", "ospf_cost": 10, "controllable": true},
+    {"id": "hq-br2", "kind": "wan", "a": {"device": "hq-core-01", "interface": "eth3", "address": "10.255.0.9"}, "b": {"device": "br2-edge-01", "interface": "eth1", "address": "10.255.0.10"}, "subnet": "10.255.0.8/30", "ospf_cost": 10, "controllable": true},
+    {"id": "br1-br2", "kind": "backup", "a": {"device": "br1-edge-01", "interface": "eth2", "address": "10.255.0.13"}, "b": {"device": "br2-edge-01", "interface": "eth2", "address": "10.255.0.14"}, "subnet": "10.255.0.12/30", "ospf_cost": 100, "controllable": true},
+    {"id": "hq-servers", "kind": "lan", "a": {"device": "hq-core-01", "interface": "br20", "address": "10.10.20.1"}, "b": {"device": "hq-srv-01", "interface": "eth1", "address": "10.10.20.10"}, "subnet": "10.10.20.0/24", "ospf_cost": null, "controllable": false},
+    {"id": "hq-files", "kind": "lan", "a": {"device": "hq-core-01", "interface": "br20", "address": "10.10.20.1"}, "b": {"device": "hq-srv-02", "interface": "eth1", "address": "10.10.20.11"}, "subnet": "10.10.20.0/24", "ospf_cost": null, "controllable": false},
+    {"id": "hq-users", "kind": "lan", "a": {"device": "hq-core-01", "interface": "eth4", "address": "10.10.10.1"}, "b": {"device": "hq-pc-01", "interface": "eth1", "address": "10.10.10.100"}, "subnet": "10.10.10.0/24", "ospf_cost": null, "controllable": false},
+    {"id": "br1-users", "kind": "lan", "a": {"device": "br1-edge-01", "interface": "eth3", "address": "10.20.10.1"}, "b": {"device": "br1-pc-01", "interface": "eth1", "address": "10.20.10.100"}, "subnet": "10.20.10.0/24", "ospf_cost": null, "controllable": false},
+    {"id": "br2-users", "kind": "lan", "a": {"device": "br2-edge-01", "interface": "eth3", "address": "10.30.10.1"}, "b": {"device": "br2-pc-01", "interface": "eth1", "address": "10.30.10.100"}, "subnet": "10.30.10.0/24", "ospf_cost": null, "controllable": false},
+    {"id": "isp-internet", "kind": "lan", "a": {"device": "isp-edge-01", "interface": "eth2", "address": "198.51.100.1"}, "b": {"device": "isp-srv-01", "interface": "eth1", "address": "198.51.100.10"}, "subnet": "198.51.100.0/24", "ospf_cost": null, "controllable": false}
+  ],
+  "expected_ospf_neighbors": {
+    "hq-edge-01": ["10.255.255.2"],
+    "hq-core-01": ["10.255.255.1", "10.255.255.3", "10.255.255.4"],
+    "br1-edge-01": ["10.255.255.2", "10.255.255.4"],
+    "br2-edge-01": ["10.255.255.2", "10.255.255.3"]
+  },
+  "base_subnets": [
+    {"site": "hq", "name": "users-a", "cidr_block": "10.110.10.0/24", "az": "a", "tier": "users"},
+    {"site": "hq", "name": "users-b", "cidr_block": "10.110.11.0/24", "az": "b", "tier": "users"},
+    {"site": "hq", "name": "servers-a", "cidr_block": "10.110.20.0/24", "az": "a", "tier": "servers"},
+    {"site": "hq", "name": "servers-b", "cidr_block": "10.110.21.0/24", "az": "b", "tier": "servers"},
+    {"site": "hq", "name": "mgmt-a", "cidr_block": "10.110.99.0/27", "az": "a", "tier": "mgmt"},
+    {"site": "hq", "name": "mgmt-b", "cidr_block": "10.110.99.32/27", "az": "b", "tier": "mgmt"},
+    {"site": "br1", "name": "users-a", "cidr_block": "10.120.10.0/24", "az": "a", "tier": "users"},
+    {"site": "br1", "name": "users-b", "cidr_block": "10.120.11.0/24", "az": "b", "tier": "users"},
+    {"site": "br1", "name": "mgmt-a", "cidr_block": "10.120.99.0/27", "az": "a", "tier": "mgmt"},
+    {"site": "br1", "name": "mgmt-b", "cidr_block": "10.120.99.32/27", "az": "b", "tier": "mgmt"},
+    {"site": "br2", "name": "users-a", "cidr_block": "10.130.10.0/24", "az": "a", "tier": "users"},
+    {"site": "br2", "name": "users-b", "cidr_block": "10.130.11.0/24", "az": "b", "tier": "users"},
+    {"site": "br2", "name": "mgmt-a", "cidr_block": "10.130.99.0/27", "az": "a", "tier": "mgmt"},
+    {"site": "br2", "name": "mgmt-b", "cidr_block": "10.130.99.32/27", "az": "b", "tier": "mgmt"}
+  ],
+  "reserved_cidrs": ["10.110.0.0/23", "10.110.250.0/27", "10.120.250.0/27", "10.130.250.0/27"]
+}
