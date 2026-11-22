@@ -60,3 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     only when `LOCALSTACK_AUTH_TOKEN` is set. There is no real-AWS job.
   - Artifacts: the API image, coverage reports, the web build and a debug
     APK.
+- Showcase (phase 8):
+  - README with the architecture diagram, run steps for every layer and a
+    results table;
+  - `docs/demo-script.md` (a five-minute recording plan);
+  - `docs/case-study.md`.
