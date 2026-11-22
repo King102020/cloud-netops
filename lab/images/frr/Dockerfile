@@ -1,6 +1,6 @@
 # FRR plus iptables, so lab routers can enforce the ACLs from
 # docs/network-design.md section 6 (FRR itself does not filter packets).
-FROM quay.io/frrouting/frr:10.2.1
+FROM quay.io/frrouting/frr:10.7.1
 
 RUN apk add --no-cache iptables tcpdump
 
