@@ -1,0 +1,36 @@
+# Repo-wide gate: pre-commit hooks (whitespace, YAML/JSON, private keys,
+# gitleaks, terraform fmt, ruff) on every PR and push to main (STANDARDS §1, §7).
+name: repo
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # gitleaks scans history
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.17.2"
+          terraform_wrapper: false
+      - name: pre-commit (all files)
+        uses: pre-commit/action@v3.0.1
+        env:
+          # dart format runs in app.yml, which has the Flutter SDK.
+          SKIP: dart-format

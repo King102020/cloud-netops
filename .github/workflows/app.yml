@@ -1,0 +1,76 @@
+# Flutter app gate (STANDARDS §6, §7, §8): format, analyze, tests + coverage
+# >= 70%, generated client in sync with api/openapi.json, web + Android builds.
+# iOS needs macOS: built on the owner's Mac (no paid macOS minutes in CI).
+name: app
+
+on:
+  pull_request:
+    paths: ["app/**", "api/openapi.json", ".github/workflows/app.yml"]
+  push:
+    branches: [main]
+    paths: ["app/**", "api/openapi.json", ".github/workflows/app.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.35.3"
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Quality gate (format, analyze, tests, coverage, client drift, web build)
+        run: ./app/check.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: app-coverage
+          path: app/coverage/lcov.info
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: golden-failures
+          path: app/test/failures/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-web
+          path: app/build/web
+          retention-days: 7
+
+  android:
+    needs: check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Build debug APK
+        working-directory: app
+        run: flutter build apk --debug --dart-define-from-file=config/local-android-emulator.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-android-debug-apk
+          path: app/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
