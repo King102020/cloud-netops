@@ -38,7 +38,7 @@ jobs:
         if: always()
         working-directory: api
         run: .venv/bin/python -m pytest --cov-report=xml:coverage.xml -q
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: api-coverage
@@ -58,7 +58,7 @@ jobs:
           for _ in $(seq 1 30); do curl -sf localhost:8000/healthz && break; sleep 1; done
           curl -sf localhost:8000/healthz
           docker save cnops-api:${{ github.sha }} | gzip > cnops-api.tar.gz
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: cnops-api-image
           path: cnops-api.tar.gz
