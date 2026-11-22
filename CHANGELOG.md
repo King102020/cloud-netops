@@ -31,3 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   checkov reports 178 passed and 0 failed.
 - ADR 0004 (cost over redundancy in the lab) and `docs/local-gaps.md`
   entries for LocalStack.
+- Control API (phase 4), built with FastAPI. Endpoints: topology, devices,
+  health, links up/down, alerts, firewall rules, subnets, Terraform jobs
+  and the audit log.
+  - Infrastructure changes go through Terraform only (202 + job).
+  - JWT roles, RFC 9457 errors, idempotency keys and JSON logs with
+    request IDs.
+  - Committed `api/openapi.json`, with a drift test.
+  - 73 tests at ~97% coverage, including integration against the real
+    lab. `mypy --strict` and ruff are clean, and pip-audit is clean.
