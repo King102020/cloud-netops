@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Local quality gate (STANDARDS section 7). Runs the gates for every layer
+# that exists. Keep in sync with tool/check.ps1 and the CI workflows.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+step() {
+  printf '\033[36m==> %s\033[0m\n' "$1"
+  shift
+  "$@"
+}
+
+if command -v pre-commit >/dev/null 2>&1; then
+  PRE_COMMIT=(pre-commit)
+else
+  PRE_COMMIT=(python3 -m pre_commit)
+fi
+step "pre-commit (format, YAML/JSON, gitleaks)" "${PRE_COMMIT[@]}" run --all-files
+
+# Layer gates are added by the phase that creates the layer:
+#   lab/    phase 2: containerlab deploy + lab/tests
+#   infra/  phase 3: terraform fmt/validate, tflint, checkov, lstk plan
+#   api/    phase 4: ruff, mypy --strict, pytest --cov (>= 80%)
+#   app/    phase 5: flutter analyze, flutter test --coverage (>= 70%), web build
+
+printf '\033[32mAll checks passed.\033[0m\n'
