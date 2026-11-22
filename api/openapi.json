@@ -12,7 +12,7 @@
           "system"
         ],
         "summary": "Liveness: the process is up",
-        "operationId": "healthz_healthz_get",
+        "operationId": "healthz",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -33,7 +33,7 @@
           "system"
         ],
         "summary": "Readiness: dependencies are reachable",
-        "operationId": "readyz_readyz_get",
+        "operationId": "readyz",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -64,7 +64,7 @@
           "auth"
         ],
         "summary": "Log in (local issuer) and get a JWT",
-        "operationId": "login_v1_auth_token_post",
+        "operationId": "login",
         "requestBody": {
           "content": {
             "application/json": {
@@ -111,7 +111,7 @@
           "topology"
         ],
         "summary": "Sites, devices and links with live state",
-        "operationId": "topology_v1_topology_get",
+        "operationId": "topology",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -203,7 +203,7 @@
           "devices"
         ],
         "summary": "List devices",
-        "operationId": "list_devices_v1_devices_get",
+        "operationId": "list_devices",
         "security": [
           {
             "HTTPBearer": []
@@ -363,7 +363,7 @@
           "devices"
         ],
         "summary": "Device detail with live interfaces",
-        "operationId": "get_device_v1_devices__device_id__get",
+        "operationId": "get_device",
         "security": [
           {
             "HTTPBearer": []
@@ -470,7 +470,7 @@
           "devices"
         ],
         "summary": "Reachability and OSPF neighbours",
-        "operationId": "device_health_v1_devices__device_id__health_get",
+        "operationId": "device_health",
         "security": [
           {
             "HTTPBearer": []
@@ -577,7 +577,7 @@
           "links"
         ],
         "summary": "List links with live state",
-        "operationId": "list_links_v1_links_get",
+        "operationId": "list_links",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -588,7 +588,7 @@
                     "$ref": "#/components/schemas/Link"
                   },
                   "type": "array",
-                  "title": "Response List Links V1 Links Get"
+                  "title": "Response List Links"
                 }
               }
             }
@@ -673,7 +673,7 @@
           "links"
         ],
         "summary": "One link",
-        "operationId": "get_link_v1_links__link_id__get",
+        "operationId": "get_link",
         "security": [
           {
             "HTTPBearer": []
@@ -778,7 +778,7 @@
           "links"
         ],
         "summary": "Take a link up or down (operator). OSPF reroutes around it.",
-        "operationId": "set_link_v1_links__link_id__patch",
+        "operationId": "set_link",
         "security": [
           {
             "HTTPBearer": []
@@ -895,7 +895,7 @@
           "alerts"
         ],
         "summary": "Active alerts from live health checks",
-        "operationId": "alerts_v1_alerts_get",
+        "operationId": "alerts",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -906,7 +906,7 @@
                     "$ref": "#/components/schemas/Alert"
                   },
                   "type": "array",
-                  "title": "Response Alerts V1 Alerts Get"
+                  "title": "Response Alerts"
                 }
               }
             }
@@ -991,7 +991,7 @@
           "firewall"
         ],
         "summary": "List API-managed firewall rules",
-        "operationId": "list_rules_v1_firewall_rules_get",
+        "operationId": "list_rules",
         "security": [
           {
             "HTTPBearer": []
@@ -1150,7 +1150,7 @@
           "firewall"
         ],
         "summary": "Add a security-group rule (operator). Applied through Terraform.",
-        "operationId": "create_rule_v1_firewall_rules_post",
+        "operationId": "create_rule",
         "security": [
           {
             "HTTPBearer": []
@@ -1268,7 +1268,7 @@
           "firewall"
         ],
         "summary": "One firewall rule",
-        "operationId": "get_rule_v1_firewall_rules__rule_id__get",
+        "operationId": "get_rule",
         "security": [
           {
             "HTTPBearer": []
@@ -1370,7 +1370,7 @@
           "firewall"
         ],
         "summary": "Enable or disable a rule (operator). Applied through Terraform.",
-        "operationId": "patch_rule_v1_firewall_rules__rule_id__patch",
+        "operationId": "patch_rule",
         "security": [
           {
             "HTTPBearer": []
@@ -1482,7 +1482,7 @@
           "firewall"
         ],
         "summary": "Remove a rule (operator). Applied through Terraform.",
-        "operationId": "delete_rule_v1_firewall_rules__rule_id__delete",
+        "operationId": "delete_rule",
         "security": [
           {
             "HTTPBearer": []
@@ -1586,7 +1586,7 @@
           "subnets"
         ],
         "summary": "Cloud subnets: base design + API-managed",
-        "operationId": "list_subnets_v1_subnets_get",
+        "operationId": "list_subnets",
         "security": [
           {
             "HTTPBearer": []
@@ -1728,7 +1728,7 @@
           "subnets"
         ],
         "summary": "Create a subnet in a site's VPC (admin). Applied through Terraform.",
-        "operationId": "create_subnet_v1_subnets_post",
+        "operationId": "create_subnet",
         "security": [
           {
             "HTTPBearer": []
@@ -1846,7 +1846,7 @@
           "jobs"
         ],
         "summary": "Terraform job status",
-        "operationId": "get_job_v1_jobs__job_id__get",
+        "operationId": "get_job",
         "security": [
           {
             "HTTPBearer": []
@@ -1950,7 +1950,7 @@
           "audit"
         ],
         "summary": "Audit log, newest first",
-        "operationId": "audit_events_v1_audit_events_get",
+        "operationId": "audit_events",
         "security": [
           {
             "HTTPBearer": []
