@@ -8,6 +8,22 @@ which is the source of truth. If the two disagree, the doc wins and the
 
 File: `cloud-netops.pkt` (commit it here when built).
 
+## Fast path: paste the configs
+
+[`configs/`](configs/) has a complete, paste-ready IOS config for every
+router and switch, plus [`servers-and-hosts.md`](configs/servers-and-hosts.md)
+for the GUI-only devices.
+
+1. Place and cable the devices as in steps 1–2 below.
+2. Open each device's **CLI** tab and paste its `.ios` file. Replace
+   `CHANGE_ME` with a lab password first. These are placeholders, so no
+   real secret is ever committed.
+3. Set up the servers and hosts from `servers-and-hosts.md`.
+4. Run the acceptance tests (design doc §10).
+
+The step-by-step guide below explains what each block of those configs
+does.
+
 ## Build order
 
 Each step lists the doc section it comes from.
