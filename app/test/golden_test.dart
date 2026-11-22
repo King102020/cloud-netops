@@ -9,7 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helpers/fakes.dart';
 import 'helpers/pump_app.dart';
 
-// Regenerate: flutter test --update-goldens test/golden_test.dart
+// Goldens are canonical on Linux (the CI platform). Regenerate them there:
+//   docker run --rm -v "$PWD/app:/src:ro" -v "$PWD/app/test/goldens:/out" //     ghcr.io/cirruslabs/flutter:3.35.3 bash -c 'cp -r /src /app && cd /app && //     flutter pub get && flutter test --update-goldens test/golden_test.dart && cp test/goldens/*.png /out/'
 void main() {
   for (final brightness in Brightness.values) {
     final name = brightness.name;

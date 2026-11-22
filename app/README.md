@@ -81,8 +81,12 @@ flutter test integration_test -d <device>    # core flow on an emulator/simulato
 ```
 
 - **Goldens** (`test/goldens/`) cover login, the topology in light and dark,
-  desktop layout and firewall rules. Regenerate with
-  `flutter test --update-goldens test/golden_test.dart`.
+  desktop layout and firewall rules.
+  - They are generated on **Linux**, the CI platform. Windows and macOS
+    render anti-aliasing slightly differently, so local runs use a 1.5%
+    tolerance.
+  - To regenerate them, use the Docker command at the top of
+    `test/golden_test.dart`.
 - **Builds checked:** `flutter build web` and `flutter build apk --debug`.
   iOS is built on the Mac.
 
