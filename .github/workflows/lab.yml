@@ -1,0 +1,49 @@
+# Lab gate (STANDARDS §3, §7): a clean `containerlab deploy` must pass lab/tests.
+name: lab
+
+on:
+  pull_request:
+    paths: ["lab/**", ".github/workflows/lab.yml"]
+  push:
+    branches: [main]
+    paths: ["lab/**", ".github/workflows/lab.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lab-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CONTAINERLAB_VERSION: "0.83.0"
+
+jobs:
+  deploy-and-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install containerlab ${{ env.CONTAINERLAB_VERSION }}
+        run: |
+          curl -sL https://get.containerlab.dev -o install-clab.sh
+          sudo bash install-clab.sh -v "$CONTAINERLAB_VERSION"
+          containerlab version
+      - name: Deploy lab (builds cnops/frr image)
+        run: sudo -E env "PATH=$PATH" ./lab/clab.sh deploy
+      - name: Lab acceptance tests
+        run: |
+          python -m pip install -r lab/requirements.txt
+          python -m pytest lab/tests -v
+      - name: Router state on failure
+        if: failure()
+        run: |
+          for r in hq-edge-01 hq-core-01 br1-edge-01 br2-edge-01; do
+            echo "== $r"; docker exec clab-cnops-$r vtysh -c "show ip ospf neighbor" -c "show ip route" || true
+          done
+      - name: Destroy lab
+        if: always()
+        run: sudo -E env "PATH=$PATH" ./lab/clab.sh destroy || true

@@ -42,7 +42,7 @@ def run(node: str, cmd: str, timeout: float = 30) -> Result:
     return Result(proc.returncode, (proc.stdout + proc.stderr).strip())
 
 
-def vtysh_json(router: str, command: str) -> Any:  # noqa: ANN401 - parsed JSON is untyped
+def vtysh_json(router: str, command: str) -> Any:
     res = run(router, f"vtysh -c '{command} json'")
     assert res.rc == 0, res.out
     return json.loads(res.out)

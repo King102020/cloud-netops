@@ -51,3 +51,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Web and Android debug builds pass.
 - API: operation IDs are now the Python function names, which gives the
   generated client readable method names.
+- CI (phase 6): GitHub Actions workflows `repo` (pre-commit and gitleaks),
+  `lab`, `infra`, `api` and `app`.
+  - Every workflow has path filters, pinned actions and toolchains, and
+    read-only permissions.
+  - `lab` deploys containerlab and runs the tests.
+  - `infra` runs the offline gate and a plan; it applies on LocalStack
+    only when `LOCALSTACK_AUTH_TOKEN` is set. There is no real-AWS job.
+  - Artifacts: the API image, coverage reports, the web build and a debug
+    APK.
