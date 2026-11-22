@@ -18,8 +18,17 @@ if (Get-Command pre-commit -ErrorAction SilentlyContinue) {
     Invoke-Step "pre-commit (format, YAML/JSON, gitleaks)" { python -m pre_commit run --all-files }
 }
 
-# Layer gates are added by the phase that creates the layer:
-#   lab/    phase 2: containerlab deploy + lab/tests (runs in WSL)
+# ---- lab/ (phase 2) ----
+# Lab tests need a deployed lab; deploying takes ~30 s, so the gate only runs
+# them when the lab is up and says so clearly otherwise.
+$running = docker inspect -f '{{.State.Running}}' clab-cnops-hq-core-01 2>$null
+if ($running -eq 'true') {
+    Invoke-Step "lab: pytest lab/tests" { lab\.venv\Scripts\python -m pytest lab/tests -q -p no:cacheprovider }
+} else {
+    Write-Host "==> lab: SKIPPED (not deployed). Run: bash lab/clab.sh deploy" -ForegroundColor Yellow
+}
+
+# Layer gates still to come:
 #   infra/  phase 3: terraform fmt/validate, tflint, checkov, lstk plan
 #   api/    phase 4: ruff, mypy --strict, pytest --cov (>= 80%)
 #   app/    phase 5: flutter analyze, flutter test --coverage (>= 70%), web build
