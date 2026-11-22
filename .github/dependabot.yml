@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # Only ecosystems whose manifests exist are enabled; the rest are added
+  # by the phase that creates them (api/ in phase 4, app/ in phase 5,
+  # infra/ in phase 3).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore(ci)
