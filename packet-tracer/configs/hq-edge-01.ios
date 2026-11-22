@@ -1,0 +1,74 @@
+! hq-edge-01 — ISR4331 — internet edge, NAT/PAT, OSPF ASBR
+! Source: docs/network-design.md §4.2, §4.3, §5, §6.3, §8
+! Paste in the CLI tab. Replace CHANGE_ME with a lab password first.
+enable
+configure terminal
+hostname hq-edge-01
+no ip domain-lookup
+ip domain-name cnops.internal
+service password-encryption
+enable secret CHANGE_ME
+username admin privilege 15 secret CHANGE_ME
+banner motd ^Authorised access only - Cloud NetOps lab^
+!
+interface Loopback0
+ description Router ID and management
+ ip address 10.255.255.1 255.255.255.255
+!
+interface GigabitEthernet0/0/0
+ description OUTSIDE to isp-edge-01 Gi0/0
+ ip address 203.0.113.2 255.255.255.252
+ ip nat outside
+ no shutdown
+!
+interface GigabitEthernet0/0/1
+ description INSIDE to hq-core-01 Gi1/0/24
+ ip address 10.255.0.1 255.255.255.252
+ ip nat inside
+ ip ospf network point-to-point
+ ip ospf cost 1
+ no shutdown
+!
+interface GigabitEthernet0/0/2
+ description UNUSED
+ shutdown
+!
+! Default route to the ISP, injected into OSPF for every site.
+ip route 0.0.0.0 0.0.0.0 203.0.113.1
+!
+router ospf 1
+ router-id 10.255.255.1
+ auto-cost reference-bandwidth 10000
+ passive-interface default
+ no passive-interface GigabitEthernet0/0/1
+ network 10.255.255.1 0.0.0.0 area 0
+ network 10.255.0.0 0.0.0.3 area 0
+ default-information originate
+!
+ip access-list standard NAT-INSIDE
+ remark Company address space that may use the ISP address (PAT)
+ permit 10.10.0.0 0.0.255.255
+ permit 10.20.0.0 0.0.255.255
+ permit 10.30.0.0 0.0.255.255
+!
+ip nat inside source list NAT-INSIDE interface GigabitEthernet0/0/0 overload
+!
+ip access-list standard MGMT-VTY
+ remark SSH only from the MGMT VLANs
+ permit 10.10.99.0 0.0.0.31
+ permit 10.20.99.0 0.0.0.31
+ permit 10.30.99.0 0.0.0.31
+ deny any log
+!
+crypto key generate rsa general-keys modulus 2048
+ip ssh version 2
+!
+line console 0
+ logging synchronous
+ login local
+line vty 0 15
+ access-class MGMT-VTY in
+ transport input ssh
+ login local
+end
+write memory

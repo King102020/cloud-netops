@@ -1,0 +1,19 @@
+! isp-edge-01 — 2911 — simulated ISP. Not a company device: no OSPF, no
+! routes to 10.0.0.0/8 (the company is hidden behind hq-edge-01 PAT).
+! Source: docs/network-design.md §4.2, §4.4
+enable
+configure terminal
+hostname isp-edge-01
+no ip domain-lookup
+!
+interface GigabitEthernet0/0
+ description Customer cnops hq-edge-01 Gi0/0/0
+ ip address 203.0.113.1 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description Simulated internet (isp-srv-01)
+ ip address 198.51.100.1 255.255.255.0
+ no shutdown
+end
+write memory

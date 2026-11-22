@@ -1,0 +1,35 @@
+%% Cloud NetOps — physical/logical topology (phase 1 design).
+%% Source of truth for addresses: docs/network-design.md
+flowchart TB
+  subgraph ISP["ISP (simulated)"]
+    isp_edge["isp-edge-01<br/>203.0.113.1"]
+    isp_srv["isp-srv-01<br/>198.51.100.10<br/>web + public DNS"]
+    isp_edge --- isp_srv
+  end
+
+  subgraph HQ["HQ — 10.10.0.0/16 — OSPF area 0"]
+    hq_edge["hq-edge-01<br/>lo 10.255.255.1<br/>NAT / PAT, default route"]
+    hq_core["hq-core-01 (L3 switch)<br/>lo 10.255.255.2<br/>WAN hub, DHCP"]
+    hq_access["hq-access-01<br/>VLAN 10 · 20 · 30 · 99"]
+    hq_srv["hq-srv-01 10.10.20.10<br/>hq-srv-02 10.10.20.11"]
+    hq_edge ---|"10.255.0.0/30"| hq_core
+    hq_core ===|"trunk"| hq_access
+    hq_access --- hq_srv
+  end
+
+  subgraph BR1["br1 — 10.20.0.0/16 — OSPF area 1"]
+    br1_edge["br1-edge-01 (ABR)<br/>lo 10.255.255.3<br/>DHCP"]
+    br1_access["br1-access-01<br/>VLAN 10 · 30 · 99"]
+    br1_edge ===|"trunk (router-on-a-stick)"| br1_access
+  end
+
+  subgraph BR2["br2 — 10.30.0.0/16 — OSPF area 2"]
+    br2_edge["br2-edge-01 (ABR)<br/>lo 10.255.255.4<br/>DHCP"]
+    br2_access["br2-access-01<br/>VLAN 10 · 30 · 99"]
+    br2_edge ===|"trunk (router-on-a-stick)"| br2_access
+  end
+
+  isp_edge ---|"203.0.113.0/30"| hq_edge
+  hq_core ---|"WAN 10.255.0.4/30 · cost 10 · area 0"| br1_edge
+  hq_core ---|"WAN 10.255.0.8/30 · cost 10 · area 0"| br2_edge
+  br1_edge -.-|"backup 10.255.0.12/30 · cost 100 · area 0"| br2_edge
