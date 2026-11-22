@@ -1,0 +1,5 @@
+tags:
+  golden:
+    # Pixel goldens; see test/flutter_test_config.dart for the cross-OS tolerance.
+  live:
+    # Needs the control API on localhost:8000; skipped when it is not running.

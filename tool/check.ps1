@@ -34,7 +34,7 @@ Invoke-Step "infra" { bash infra/check.sh }
 # ---- api/ (phase 4) ---- ruff, mypy --strict, pytest >= 80%, OpenAPI drift, pip-audit
 Invoke-Step "api" { bash api/check.sh }
 
-# Layer gates still to come:
-#   app/    phase 5: flutter analyze, flutter test --coverage (>= 70%), web build
+# ---- app/ (phase 5) ---- format, analyze, tests + coverage >= 70%, client drift, web build
+Invoke-Step "app" { bash app/check.sh }
 
 Write-Host "All checks passed." -ForegroundColor Green

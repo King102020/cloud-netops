@@ -1,0 +1,15 @@
+# Generates the API client from the committed OpenAPI spec (STANDARDS §5/§6).
+# Regenerate after the API changes:
+#   dart run swagger_parser && dart run build_runner build --delete-conflicting-outputs
+swagger_parser:
+  schema_path: ../api/openapi.json
+  output_directory: lib/generated/api
+  name: cnops
+  language: dart
+  json_serializer: json_serializable
+  root_client: true
+  root_client_name: CnopsApiClient
+  put_clients_in_folder: true
+  enums_to_json: true
+  unknown_enum_value: true
+  mark_files_as_generated: true

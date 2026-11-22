@@ -43,6 +43,9 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         container.jobs.stop()
 
     app = FastAPI(
+        # operationId = the Python function name (list_rules, set_link, ...), so the
+        # generated Flutter client gets readable method names.
+        generate_unique_id_function=lambda route: route.name,
         title="Cloud NetOps API",
         version=__version__,
         description=DESCRIPTION,
