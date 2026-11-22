@@ -1,0 +1,186 @@
+# Cloud NetOps lab — reproduces docs/network-design.md with FRR routers.
+# Deploy:  ./lab/clab.sh deploy     Test:  python -m pytest lab/tests
+#
+# Interface map (lab ethN ↔ Packet Tracer port) is in lab/README.md.
+# L2 switches are not modelled: each VLAN is one router interface (or a
+# Linux bridge for VLAN 20), which is what an SVI is at L3.
+name: cnops
+
+mgmt:
+  network: cnops-mgmt
+  ipv4-subnet: 172.20.20.0/24
+
+topology:
+  defaults:
+    kind: linux
+
+  nodes:
+    # ---------------- Routers (FRR 10.2.1 + iptables) ----------------
+    hq-edge-01:
+      image: cnops/frr:10.2.1
+      mgmt-ipv4: 172.20.20.11
+      labels: { cnops.role: router, cnops.site: hq }
+      binds:
+        - configs/daemons:/etc/frr/daemons:ro
+        - configs/vtysh.conf:/etc/frr/vtysh.conf:ro
+        - configs/common.sh:/cnops/common.sh:ro
+        - configs/hq-edge-01/frr.conf:/etc/frr/frr.conf
+        - configs/hq-edge-01/init.sh:/cnops/init.sh:ro
+      exec: [sh /cnops/init.sh]
+
+    hq-core-01:
+      image: cnops/frr:10.2.1
+      mgmt-ipv4: 172.20.20.12
+      labels: { cnops.role: router, cnops.site: hq }
+      binds:
+        - configs/daemons:/etc/frr/daemons:ro
+        - configs/vtysh.conf:/etc/frr/vtysh.conf:ro
+        - configs/common.sh:/cnops/common.sh:ro
+        - configs/hq-core-01/frr.conf:/etc/frr/frr.conf
+        - configs/hq-core-01/init.sh:/cnops/init.sh:ro
+      exec: [sh /cnops/init.sh]
+
+    br1-edge-01:
+      image: cnops/frr:10.2.1
+      mgmt-ipv4: 172.20.20.13
+      labels: { cnops.role: router, cnops.site: br1 }
+      binds:
+        - configs/daemons:/etc/frr/daemons:ro
+        - configs/vtysh.conf:/etc/frr/vtysh.conf:ro
+        - configs/common.sh:/cnops/common.sh:ro
+        - configs/br1-edge-01/frr.conf:/etc/frr/frr.conf
+        - configs/br1-edge-01/init.sh:/cnops/init.sh:ro
+      exec: [sh /cnops/init.sh]
+
+    br2-edge-01:
+      image: cnops/frr:10.2.1
+      mgmt-ipv4: 172.20.20.14
+      labels: { cnops.role: router, cnops.site: br2 }
+      binds:
+        - configs/daemons:/etc/frr/daemons:ro
+        - configs/vtysh.conf:/etc/frr/vtysh.conf:ro
+        - configs/common.sh:/cnops/common.sh:ro
+        - configs/br2-edge-01/frr.conf:/etc/frr/frr.conf
+        - configs/br2-edge-01/init.sh:/cnops/init.sh:ro
+      exec: [sh /cnops/init.sh]
+
+    isp-edge-01:
+      image: cnops/frr:10.2.1
+      mgmt-ipv4: 172.20.20.15
+      labels: { cnops.role: isp, cnops.site: isp }
+      binds:
+        - configs/daemons:/etc/frr/daemons:ro
+        - configs/vtysh.conf:/etc/frr/vtysh.conf:ro
+        - configs/common.sh:/cnops/common.sh:ro
+        - configs/isp-edge-01/frr.conf:/etc/frr/frr.conf
+        - configs/isp-edge-01/init.sh:/cnops/init.sh:ro
+      exec: [sh /cnops/init.sh]
+
+    # ---------------- Hosts (network-multitool: nginx, curl, nc, socat) ----------------
+    hq-pc-01:
+      image: &host ghcr.io/hellt/network-multitool@sha256:a8d96c19e593e227d7b16d320a04256ba00434028f0adb9f7da206bf098c7140
+      mgmt-ipv4: 172.20.20.101
+      labels: { cnops.role: host, cnops.site: hq, cnops.vlan: "10" }
+      exec:
+        - ip addr add 10.10.10.100/24 dev eth1
+        - ip route replace default via 10.10.10.1 dev eth1
+
+    hq-srv-01:
+      image: *host
+      mgmt-ipv4: 172.20.20.102
+      labels: { cnops.role: server, cnops.site: hq, cnops.vlan: "20" }
+      exec:
+        - ip addr add 10.10.20.10/24 dev eth1
+        - ip route replace default via 10.10.20.1 dev eth1
+        # Intranet web on 80/443 (the image only starts nginx when it is the CMD).
+        - sh -c "echo 'cnops intranet (hq-srv-01)' > /usr/share/nginx/html/index.html && nginx"
+
+    hq-srv-02:
+      image: *host
+      mgmt-ipv4: 172.20.20.103
+      labels: { cnops.role: server, cnops.site: hq, cnops.vlan: "20" }
+      exec:
+        - ip addr add 10.10.20.11/24 dev eth1
+        - ip route replace default via 10.10.20.1 dev eth1
+        # Stand-in for SMB: a TCP listener on 445.
+        - sh -c "setsid socat TCP-LISTEN:445,fork,reuseaddr SYSTEM:'echo cnops-files' >/dev/null 2>&1 < /dev/null &"
+
+    hq-guest-01:
+      image: *host
+      mgmt-ipv4: 172.20.20.104
+      labels: { cnops.role: host, cnops.site: hq, cnops.vlan: "30" }
+      exec:
+        - ip addr add 10.10.30.100/24 dev eth1
+        - ip route replace default via 10.10.30.1 dev eth1
+
+    hq-admin-01:
+      image: *host
+      mgmt-ipv4: 172.20.20.105
+      labels: { cnops.role: host, cnops.site: hq, cnops.vlan: "99" }
+      exec:
+        - ip addr add 10.10.99.10/27 dev eth1
+        - ip route replace default via 10.10.99.1 dev eth1
+
+    br1-pc-01:
+      image: *host
+      mgmt-ipv4: 172.20.20.111
+      labels: { cnops.role: host, cnops.site: br1, cnops.vlan: "10" }
+      exec:
+        - ip addr add 10.20.10.100/24 dev eth1
+        - ip route replace default via 10.20.10.1 dev eth1
+
+    br1-guest-01:
+      image: *host
+      mgmt-ipv4: 172.20.20.112
+      labels: { cnops.role: host, cnops.site: br1, cnops.vlan: "30" }
+      exec:
+        - ip addr add 10.20.30.100/24 dev eth1
+        - ip route replace default via 10.20.30.1 dev eth1
+
+    br2-pc-01:
+      image: *host
+      mgmt-ipv4: 172.20.20.121
+      labels: { cnops.role: host, cnops.site: br2, cnops.vlan: "10" }
+      exec:
+        - ip addr add 10.30.10.100/24 dev eth1
+        - ip route replace default via 10.30.10.1 dev eth1
+
+    br2-guest-01:
+      image: *host
+      mgmt-ipv4: 172.20.20.122
+      labels: { cnops.role: host, cnops.site: br2, cnops.vlan: "30" }
+      exec:
+        - ip addr add 10.30.30.100/24 dev eth1
+        - ip route replace default via 10.30.30.1 dev eth1
+
+    isp-srv-01:
+      image: *host
+      mgmt-ipv4: 172.20.20.131
+      labels: { cnops.role: server, cnops.site: isp }
+      exec:
+        - ip addr add 198.51.100.10/24 dev eth1
+        - ip route replace default via 198.51.100.1 dev eth1
+        - sh -c "echo 'the internet (isp-srv-01)' > /usr/share/nginx/html/index.html && nginx"
+        # "What is my IP" on 8080: replies with the source address it sees (NAT check).
+        - sh -c 'setsid socat TCP-LISTEN:8080,fork,reuseaddr SYSTEM:"echo \$SOCAT_PEERADDR" >/dev/null 2>&1 < /dev/null &'
+
+  links:
+    # Transit / WAN (docs/network-design.md §4.2)
+    - endpoints: ["isp-edge-01:eth1", "hq-edge-01:eth1"]   # 203.0.113.0/30
+    - endpoints: ["hq-edge-01:eth2", "hq-core-01:eth1"]    # 10.255.0.0/30
+    - endpoints: ["hq-core-01:eth2", "br1-edge-01:eth1"]   # 10.255.0.4/30  WAN
+    - endpoints: ["hq-core-01:eth3", "br2-edge-01:eth1"]   # 10.255.0.8/30  WAN
+    - endpoints: ["br1-edge-01:eth2", "br2-edge-01:eth2"]  # 10.255.0.12/30 backup
+    # HQ VLANs
+    - endpoints: ["hq-core-01:eth4", "hq-pc-01:eth1"]      # VLAN 10
+    - endpoints: ["hq-core-01:eth5", "hq-srv-01:eth1"]     # VLAN 20 (br20)
+    - endpoints: ["hq-core-01:eth8", "hq-srv-02:eth1"]     # VLAN 20 (br20)
+    - endpoints: ["hq-core-01:eth6", "hq-guest-01:eth1"]   # VLAN 30
+    - endpoints: ["hq-core-01:eth7", "hq-admin-01:eth1"]   # VLAN 99
+    # Branch VLANs
+    - endpoints: ["br1-edge-01:eth3", "br1-pc-01:eth1"]    # VLAN 10
+    - endpoints: ["br1-edge-01:eth4", "br1-guest-01:eth1"] # VLAN 30
+    - endpoints: ["br2-edge-01:eth3", "br2-pc-01:eth1"]    # VLAN 10
+    - endpoints: ["br2-edge-01:eth4", "br2-guest-01:eth1"] # VLAN 30
+    # Simulated internet
+    - endpoints: ["isp-edge-01:eth2", "isp-srv-01:eth1"]

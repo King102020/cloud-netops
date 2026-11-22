@@ -1,0 +1,29 @@
+# Ruff config for every Python package in the repo (lab/tests, api/).
+target-version = "py311"
+line-length = 100
+
+[lint]
+select = [
+  "E", "W",  # pycodestyle
+  "F",       # pyflakes
+  "I",       # isort
+  "B",       # bugbear
+  "UP",      # pyupgrade
+  "SIM",     # simplify
+  "S",       # bandit (security)
+  "RUF",
+  "ANN",     # type annotations everywhere
+  "PT",      # pytest style
+]
+ignore = [
+  "S101",    # assert is how pytest works
+  "S603",    # subprocess without shell: we pass argument lists on purpose
+  "S607",    # partial executable path (docker, terraform) is resolved from PATH on purpose
+]
+
+[lint.per-file-ignores]
+"**/tests/**" = ["S105", "S106"]  # fake tokens/passwords in tests
+
+[lint.isort]
+known-first-party = ["cnops_api"]
+known-local-folder = ["conftest"]

@@ -1,3 +1,5 @@
 # Runbooks
 
-Planned: start the lab, reset everything, common failures.
+- [Start the lab](start-the-lab.md)
+- [Reset everything](reset-everything.md)
+- [Common failures](common-failures.md)
