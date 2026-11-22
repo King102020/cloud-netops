@@ -31,8 +31,10 @@ if ($running -eq 'true') {
 # ---- infra/ (phase 3) ---- offline: fmt, validate, terraform test, tflint, checkov
 Invoke-Step "infra" { bash infra/check.sh }
 
+# ---- api/ (phase 4) ---- ruff, mypy --strict, pytest >= 80%, OpenAPI drift, pip-audit
+Invoke-Step "api" { bash api/check.sh }
+
 # Layer gates still to come:
-#   api/    phase 4: ruff, mypy --strict, pytest --cov (>= 80%)
 #   app/    phase 5: flutter analyze, flutter test --coverage (>= 70%), web build
 
 Write-Host "All checks passed." -ForegroundColor Green

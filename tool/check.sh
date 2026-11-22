@@ -31,8 +31,10 @@ fi
 # ---- infra/ (phase 3) ---- offline: fmt, validate, terraform test, tflint, checkov
 step "infra" bash infra/check.sh
 
+# ---- api/ (phase 4) ---- ruff, mypy --strict, pytest >= 80%, OpenAPI drift, pip-audit
+step "api" bash api/check.sh
+
 # Layer gates still to come:
-#   api/    phase 4: ruff, mypy --strict, pytest --cov (>= 80%)
 #   app/    phase 5: flutter analyze, flutter test --coverage (>= 70%), web build
 
 printf '\033[32mAll checks passed.\033[0m\n'

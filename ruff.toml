@@ -22,7 +22,7 @@ ignore = [
 ]
 
 [lint.per-file-ignores]
-"**/tests/**" = ["S105", "S106"]  # fake tokens/passwords in tests
+"**/tests/**" = ["S105", "S106", "ANN401"]  # fake tokens/passwords and Any-typed fakes in tests
 
 [lint.isort]
 known-first-party = ["cnops_api"]
