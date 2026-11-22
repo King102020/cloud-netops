@@ -1,0 +1,80 @@
+# ---- Secrets / local config (see *.example files) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+android/key.properties
+*.jks
+*.keystore
+
+# ---- OS / editors ----
+.DS_Store
+Thumbs.db
+*.swp
+*.log
+.idea/
+*.iml
+*.ipr
+*.iws
+.history
+# .vscode/ is intentionally tracked (shared launch/tasks config)
+
+# ---- Python (api/) ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+dist/
+
+# ---- Terraform (infra/) ----
+# .terraform.lock.hcl IS committed (STANDARDS §4).
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+*.auto.tfvars
+!*.auto.tfvars.example
+
+# ---- LocalStack ----
+.localstack/
+volume/
+
+# ---- Containerlab (lab/) ----
+clab-*/
+.*.clab.yml.bak
+
+# ---- Flutter / Dart (app/) ----
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+coverage/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+app.*.symbols
+app.*.map.json
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+
+# ---- Node (tooling) ----
+node_modules/

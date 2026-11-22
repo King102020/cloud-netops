@@ -1,0 +1,16 @@
+# Normalise line endings so Windows, WSL and macOS produce identical diffs.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files.
+*.pkt binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.mp4 binary
+*.ttf binary
+*.jar binary
