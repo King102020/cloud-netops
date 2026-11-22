@@ -78,3 +78,6 @@ app.*.map.json
 
 # ---- Node (tooling) ----
 node_modules/
+
+# ---- API-managed Terraform inputs (infra/envs/local/.cnops) ----
+.cnops/

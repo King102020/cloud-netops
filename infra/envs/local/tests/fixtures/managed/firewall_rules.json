@@ -1,0 +1,1 @@
+[{"id":"fw-0001","site":"hq","tier":"servers","protocol":"tcp","from_port":8443,"to_port":8443,"cidr":"10.20.10.0/24","description":"branch users to app port","enabled":true},{"id":"fw-0002","site":"hq","tier":"servers","protocol":"tcp","from_port":9000,"to_port":9000,"cidr":"10.30.10.0/24","description":"disabled rule","enabled":false}]

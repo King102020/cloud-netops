@@ -1,0 +1,4 @@
+{
+  "FLAVOR": "aws",
+  "API_BASE_URL": "https://REPLACE-WITH-API-GATEWAY-URL"
+}

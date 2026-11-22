@@ -2,6 +2,8 @@
 # Run everything: `pre-commit run --all-files` (tool/check does this).
 # Hooks only run when matching files exist, so later phases need no changes here.
 default_install_hook_types: [pre-commit]
+# Generated code stays byte-for-byte as generated (the app gate checks for drift).
+exclude: ^app/lib/(generated|l10n/gen)/|\.g\.dart$
 fail_fast: false
 
 repos:
@@ -48,4 +50,4 @@ repos:
         entry: dart format --output=none --set-exit-if-changed
         language: system
         files: ^app/.*\.dart$
-        exclude: (\.g\.dart$|/l10n/gen/)
+        exclude: (\.g\.dart$|/l10n/gen/|^app/lib/generated/)

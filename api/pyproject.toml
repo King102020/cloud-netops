@@ -1,0 +1,55 @@
+[project]
+name = "cnops-api"
+version = "0.1.0"
+description = "Cloud NetOps control API: topology, device health, firewall rules, subnets, links, audit log."
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+  "fastapi==0.165.0",
+  "uvicorn[standard]==0.54.0",
+  "pydantic==2.14.4",
+  "pydantic-settings==2.16.3",
+  "PyJWT==2.15.1",
+  "boto3==1.44.9",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.2.0",
+  "pytest-cov==7.1.0",
+  "httpx==0.28.1",
+  "mypy==2.4.1",
+  "ruff==0.17.6",
+  "boto3-stubs[dynamodb]==1.44.9",
+  "moto[dynamodb]==5.2.5",
+  "pip-audit==2.10.1",
+]
+
+[project.scripts]
+cnops-api = "cnops_api.main:run"
+
+[build-system]
+requires = ["setuptools>=84.1"]  # older versions have known CVEs (pip-audit)
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+cnops_api = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -p no:cacheprovider --cov=cnops_api --cov-report=term-missing --cov-fail-under=80"
+markers = ["lab: needs the Containerlab lab running (./lab/clab.sh deploy)"]
+
+[tool.coverage.run]
+branch = true
+source = ["cnops_api"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+mypy_path = "src"
+packages = ["cnops_api"]
+plugins = ["pydantic.mypy"]

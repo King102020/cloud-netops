@@ -1,11 +1,30 @@
 version: 2
 updates:
-  # Only ecosystems whose manifests exist are enabled; the rest are added
-  # by the phase that creates them (api/ in phase 4, app/ in phase 5,
-  # infra/ in phase 3).
+  # One entry per ecosystem that has a manifest in the repo.
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
     commit-message:
       prefix: chore(ci)
+
+  - package-ecosystem: terraform
+    directories: [/infra/envs/local]
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore(infra)
+
+  - package-ecosystem: pip
+    directories: [/api, /lab]
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore(api)
+
+  - package-ecosystem: docker
+    directories: [/api, /lab/images/frr]
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore(deps)
