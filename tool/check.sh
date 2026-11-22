@@ -34,7 +34,7 @@ step "infra" bash infra/check.sh
 # ---- api/ (phase 4) ---- ruff, mypy --strict, pytest >= 80%, OpenAPI drift, pip-audit
 step "api" bash api/check.sh
 
-# Layer gates still to come:
-#   app/    phase 5: flutter analyze, flutter test --coverage (>= 70%), web build
+# ---- app/ (phase 5) ---- format, analyze, tests + coverage >= 70%, client drift, web build
+step "app" bash app/check.sh
 
 printf '\033[32mAll checks passed.\033[0m\n'

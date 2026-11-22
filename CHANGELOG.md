@@ -40,3 +40,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Committed `api/openapi.json`, with a drift test.
   - 73 tests at ~97% coverage, including integration against the real
     lab. `mypy --strict` and ruff are clean, and pip-audit is clean.
+- Flutter app (phase 5) for Android, iOS and Web.
+  - Live topology map, device health with OSPF neighbours, WAN link
+    toggles, firewall rule toggles, an add-rule form with idempotent
+    retries, the audit log and in-app alerts.
+  - Client generated from `api/openapi.json`, Cubits, go_router with deep
+    links, M3 light/dark, l10n, WCAG-minded semantics.
+  - 60 tests (unit, cubit, widget, golden) at ~94% coverage of hand-written
+    code, plus a live contract test against the real API.
+  - Web and Android debug builds pass.
+- API: operation IDs are now the Python function names, which gives the
+  generated client readable method names.
