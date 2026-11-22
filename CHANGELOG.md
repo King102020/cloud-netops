@@ -23,3 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Docker or Docker Desktop. 58 pytest acceptance checks, including
   link-failover.
 - Runbooks: start the lab, reset everything, common failures.
+- Terraform (phase 3): modules `vpc`, `subnets`, `tgw`, `security`, `vpn`,
+  `dns`, `audit_store`, and the `envs/local` LocalStack composition
+  (194 resources, `ap-south-1`, two AZs). The provider is hard-pinned to a
+  validated local endpoint.
+- 8 offline `terraform test` checks with a mocked provider. tflint is clean;
+  checkov reports 178 passed and 0 failed.
+- ADR 0004 (cost over redundancy in the lab) and `docs/local-gaps.md`
+  entries for LocalStack.

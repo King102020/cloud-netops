@@ -28,8 +28,10 @@ else
   printf '\033[33m==> lab: SKIPPED (not deployed). Run: ./lab/clab.sh deploy\033[0m\n'
 fi
 
+# ---- infra/ (phase 3) ---- offline: fmt, validate, terraform test, tflint, checkov
+step "infra" bash infra/check.sh
+
 # Layer gates still to come:
-#   infra/  phase 3: terraform fmt/validate, tflint, checkov, lstk plan
 #   api/    phase 4: ruff, mypy --strict, pytest --cov (>= 80%)
 #   app/    phase 5: flutter analyze, flutter test --coverage (>= 70%), web build
 

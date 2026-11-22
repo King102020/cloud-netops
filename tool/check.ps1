@@ -28,8 +28,10 @@ if ($running -eq 'true') {
     Write-Host "==> lab: SKIPPED (not deployed). Run: bash lab/clab.sh deploy" -ForegroundColor Yellow
 }
 
+# ---- infra/ (phase 3) ---- offline: fmt, validate, terraform test, tflint, checkov
+Invoke-Step "infra" { bash infra/check.sh }
+
 # Layer gates still to come:
-#   infra/  phase 3: terraform fmt/validate, tflint, checkov, lstk plan
 #   api/    phase 4: ruff, mypy --strict, pytest --cov (>= 80%)
 #   app/    phase 5: flutter analyze, flutter test --coverage (>= 70%), web build
 
